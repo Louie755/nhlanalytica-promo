@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NHL Analytica — Hockey Intelligence, Quantified</title>
+<meta name="description" content="NHL Analytica brings cutting-edge hockey analytics to fans worldwide. Explore player Impact Ratings, trade alerts, and deep-dive video analysis." />
+<meta property="og:title" content="NHL Analytica" />
+<meta property="og:description" content="Hockey Intelligence, Quantified." />
+<meta property="og:image" content="https://nhlanalytica.com/static/preview.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ice: #0066CC;
+    --ice-light: #e8f1fb;
+    --navy: #0B1F3A;
+    --slate: #3D5A80;
+    --white: #FFFFFF;
+    --gray-50: #F7F9FC;
+    --gray-100: #EAEFF5;
+    --gray-400: #8FA3BC;
+    --gray-700: #3A4A5C;
+    --red: #C8102E;
+    --ticker-bg: #0B1F3A;
+    --ticker-text: #E8F1FB;
+    --ticker-accent: #4FC3F7;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--navy);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--white);
+    border-bottom: 2px solid var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    color: var(--navy);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--ice); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--ice); }
+
+  .nav-cta {
+    background: var(--ice);
+    color: var(--white) !important;
+    padding: 0.45rem 1.1rem;
+    border-radius: 4px;
+  }
+
+  .nav-cta:hover { background: var(--navy); color: var(--white) !important; }
+
+  /* ── BROADCAST TICKER ── */
+  .ticker-wrap {
+    background: var(--ticker-bg);
+    overflow: hidden;
+    height: 36px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-label {
+    flex-shrink: 0;
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    padding: 0 1rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+  }
+
+  .ticker-track {
+    display: flex;
+    animation: ticker-scroll 38s linear infinite;
+    white-space: nowrap;
+    color: var(--ticker-text);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .ticker-track:hover { animation-play-state: paused; }
+
+  .ticker-item {
+    padding: 0 2.5rem;
+  }
+
+  .ticker-item .ir {
+    color: var(--ticker-accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-left: 0.4rem;
+  }
+
+  @keyframes ticker-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 5rem 2rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ice);
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.0;
+    color: var(--navy);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--ice);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--gray-700);
+    line-height: 1.6;
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--ice);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.75rem 1.6rem;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--navy); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.75rem 1.6rem;
+    border-radius: 4px;
+    border: 2px solid var(--navy);
+    transition: all 0.15s;
+  }
+
+  .btn-outline:hover { background: var(--navy); color: var(--white); }
+
+  /* ── VIDEO CARD ── */
+  .video-card {
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(11,31,58,0.12);
+    border: 1px solid var(--gray-100);
+  }
+
+  .video-card-label {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.45rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dot-live {
+    width: 7px; height: 7px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .video-embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+  }
+
+  .video-embed iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  .video-footer {
+    padding: 0.9rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .video-footer span {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    font-weight: 500;
+  }
+
+  .video-footer a {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ice);
+    text-decoration: none;
+  }
+
+  .video-footer a:hover { text-decoration: underline; }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--navy);
+    padding: 2.5rem 2rem;
+  }
+
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .stat-item {
+    padding: 1.5rem 1rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-num span { color: var(--ticker-accent); }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-400);
+  }
+
+  /* ── FEATURES ── */
+  .features {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ice);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.05;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: 6px;
+    padding: 1.8rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .feature-card:hover {
+    border-color: var(--ice);
+    box-shadow: 0 4px 16px rgba(0,102,204,0.10);
+  }
+
+  .feature-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--navy);
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-card p {
+    font-size: 0.88rem;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  /* ── IR EXPLAINER ── */
+  .ir-section {
+    background: var(--ice-light);
+    border-top: 3px solid var(--ice);
+    border-bottom: 3px solid var(--ice);
+    padding: 4rem 2rem;
+  }
+
+  .ir-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .ir-inner h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 3vw, 3rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 1rem;
+    line-height: 1.05;
+  }
+
+  .ir-inner p {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  /* IR leaderboard mock */
+  .ir-board {
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(11,31,58,0.10);
+  }
+
+  .ir-board-header {
+    background: var(--navy);
+    padding: 0.75rem 1.2rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .ir-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.12s;
+  }
+
+  .ir-row:last-child { border-bottom: none; }
+  .ir-row:hover { background: var(--ice-light); }
+
+  .ir-rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--gray-400);
+    width: 24px;
+  }
+
+  .ir-player {
+    flex: 1;
+    margin-left: 1rem;
+  }
+
+  .ir-player-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--navy);
+  }
+
+  .ir-player-team {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    margin-top: 1px;
+  }
+
+  .ir-score {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--ice);
+  }
+
+  /* ── YOUTUBE CTA ── */
+  .youtube-cta {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .youtube-cta h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+
+  .youtube-cta p {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-youtube {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #FF0000;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+
+  .btn-youtube:hover { background: #CC0000; }
+
+  .yt-thumb-wrap {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(11,31,58,0.12);
+    border: 1px solid var(--gray-100);
+    position: relative;
+  }
+
+  .yt-thumb-wrap iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+  }
+
+  /* ── GLOBAL BANNER ── */
+  .global-banner {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-100);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .global-banner p {
+    font-size: 0.88rem;
+    color: var(--gray-400);
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+  }
+
+  .globe-flags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .share-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.5rem 1.1rem;
+    border-radius: 4px;
+    transition: opacity 0.15s;
+  }
+
+  .share-btn:hover { opacity: 0.85; }
+  .share-twitter  { background: #1DA1F2; color: #fff; }
+  .share-reddit   { background: #FF4500; color: #fff; }
+  .share-copy     { background: var(--navy); color: #fff; cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    color: var(--gray-400);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+  }
+
+  footer a { color: var(--gray-400); text-decoration: none; }
+  footer a:hover { color: var(--white); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero, .ir-inner, .youtube-cta {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-inner {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-item:nth-child(2) { border-right: none; }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="https://nhlanalytica.com" target="_blank">NHL<span>Analytica</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#ir">Impact Rating</a></li>
+    <li><a href="#video">Ice Analytics</a></li>
+    <li><a href="https://nhlanalytica.com" target="_blank" class="nav-cta">Launch Site →</a></li>
+  </ul>
+</nav>
+
+<!-- BROADCAST TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">⬡ IR LIVE</div>
+  <div style="overflow:hidden; flex:1;">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- JS will populate -->
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section style="background: var(--gray-50); border-bottom: 1px solid var(--gray-100);">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">🏒 Hockey Intelligence, Quantified</div>
+      <h1>Where Data Meets the<br><em>Ice</em></h1>
+      <p class="hero-sub">NHL Analytica brings proprietary Impact Rating analytics, real-time roster data, and trade alerts to hockey fans worldwide. Built by a hockey player, for hockey fans.</p>
+      <div class="hero-buttons">
+        <a class="btn-primary" href="https://nhlanalytica.com" target="_blank">Explore NHL Analytica →</a>
+        <a class="btn-outline" href="https://youtube.com/@IceAnalytics" target="_blank">Watch Ice Analytics</a>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-card-label">
+        <span class="dot-live"></span> Latest from Ice Analytics
+      </div>
+      <div class="video-embed">
+        <!-- Latest video auto-loaded via YouTube channel embed -->
+        <iframe
+          src="https://www.youtube.com/embed?listType=user_uploads&list=IceAnalytics&index=0&autoplay=0&rel=0&modestbranding=1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          title="Latest Ice Analytics video">
+        </iframe>
+      </div>
+      <div class="video-footer">
+        <span>Ice Analytics · YouTube Shorts</span>
+        <a href="https://youtube.com/@IceAnalytics" target="_blank">Subscribe →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num"><span id="playerCount">930</span><span style="font-size:1.5rem;">+</span></div>
+      <div class="stat-label">Players Tracked</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">32</div>
+      <div class="stat-label">NHL Teams</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span style="color:var(--ticker-accent)">IR</span></div>
+      <div class="stat-label">Proprietary Metric</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span id="alertCount">↑</span></div>
+      <div class="stat-label">Real-Time Trade Alerts</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="features">
+  <div class="section-header">
+    <div class="section-eyebrow">What's inside</div>
+    <h2 class="section-title">Built Different from Day One</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Impact Rating (IR)</h3>
+      <p>A proprietary composite metric that goes beyond points — weighting goals, assists, plus/minus, TOI, and more into a single player score.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Real-Time Roster Data</h3>
+      <p>Live player stats pulled directly from the NHL API with server-side caching so the page loads fast — no spinners, no waiting.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔔</div>
+      <h3>Trade Alert Push Notifications</h3>
+      <p>Subscribe and get push notifications the moment a trade drops. Never miss a roster move that changes your team's IR calculus.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <h3>Player Comparison Tool</h3>
+      <p>Compare any two players side-by-side with shareable URLs — perfect for debates, fantasy hockey, or proving a point.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3>IR Top 10 Leaderboard</h3>
+      <p>See who's genuinely moving the needle across the league — ranked by Impact Rating, updated continuously throughout the season.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌏</div>
+      <h3>Built for Global Fans</h3>
+      <p>From Seoul to Stockholm, NHL Analytica makes hockey analytics accessible to fans everywhere — not just North America.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IR EXPLAINER -->
+<section id="ir" class="ir-section">
+  <div class="ir-inner">
+    <div>
+      <h2>The Impact<br>Rating Explained</h2>
+      <p>Most hockey stats tell you what happened. <strong>Impact Rating (IR)</strong> tells you who made it happen. It's a weighted composite that accounts for production, ice time, situational play, and team context — compressing everything into one number you can actually use.</p>
+      <p>Built and maintained by Louie Suh, a 12-year competitive hockey player and NYU Sports Management student who grew up watching hockey as an outsider — and decided to build the tool he always wanted.</p>
+      <a class="btn-primary" href="https://nhlanalytica.com" target="_blank">See Live IR Scores →</a>
+    </div>
+    <div class="ir-board">
+      <div class="ir-board-header">
+        <span>IR Top 10 — Season Leaders</span>
+        <span style="color: var(--ticker-accent);">LIVE</span>
+      </div>
+      <div id="irLeaderboard">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YOUTUBE SECTION -->
+<section id="video">
+  <div class="youtube-cta">
+    <div>
+      <h2>Ice Analytics<br>on YouTube</h2>
+      <p>Short-form hockey data storytelling — dynamic ticket pricing breakdowns, goalie save percentage deep dives, and analytics explainers designed to grow the game globally.</p>
+      <p style="font-size:0.85rem; color: var(--gray-400);">A content channel by Louie Suh. Every video backed by data. Every take backed by 12 years on the ice.</p>
+      <a class="btn-youtube" href="https://youtube.com/@IceAnalytics" target="_blank">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="white"><path d="M19.6 2.2A2.5 2.5 0 0 0 17.8.4C16.3 0 10 0 10 0S3.7 0 2.2.4A2.5 2.5 0 0 0 .4 2.2 26 26 0 0 0 0 7a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C3.7 14 10 14 10 14s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 20 7a26 26 0 0 0-.4-4.8zM8 10V4l5.2 3L8 10z"/></svg>
+        Subscribe to Ice Analytics
+      </a>
+    </div>
+    <div class="yt-thumb-wrap">
+      <iframe
+        src="https://www.youtube.com/embed?listType=user_uploads&list=IceAnalytics&index=0&rel=0&modestbranding=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        title="Ice Analytics channel">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- GLOBAL SHARE BANNER -->
+<div class="global-banner">
+  <div class="section-eyebrow" style="margin-bottom:0.5rem;">🌍 Spread the Word</div>
+  <h2 style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.8rem; text-transform:uppercase; color:var(--navy); margin-bottom:0.75rem;">Hockey Analytics Has No Borders</h2>
+  <div class="globe-flags">🇺🇸 🇨🇦 🇸🇪 🇫🇮 🇨🇿 🇷🇺 🇩🇪 🇨🇭 🇰🇷 🇯🇵 🇬🇧 🇫🇷 🇸🇰 🇳🇴</div>
+  <p>NHL Analytica is built to bring advanced hockey analytics to fans everywhere. Share it with your hockey community.</p>
+  <div class="share-row">
+    <a class="share-btn share-twitter"
+       href="https://twitter.com/intent/tweet?text=NHL+Analytica+brings+advanced+hockey+analytics+to+fans+worldwide+%F0%9F%8F%92%F0%9F%93%8A+Check+it+out%3A+https%3A%2F%2Fnhlanalytica.com"
+       target="_blank">Share on X / Twitter</a>
+    <a class="share-btn share-reddit"
+       href="https://reddit.com/submit?url=https://nhlanalytica.com&title=NHL+Analytica+%E2%80%94+Hockey+Analytics+Platform+with+Proprietary+Impact+Rating"
+       target="_blank">Share on Reddit</a>
+    <button class="share-btn share-copy" onclick="copyLink()">Copy Link</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 NHL Analytica · Built by <strong style="color:white;">Louie Suh</strong> · <a href="https://nhlanalytica.com" target="_blank">nhlanalytica.com</a> · <a href="https://youtube.com/@IceAnalytics" target="_blank">Ice Analytics on YouTube</a></p>
+</footer>
+
+<script>
+// ── TICKER DATA ──
+const tickerPlayers = [
+  { name: "N. MacKinnon", team: "COL", ir: "97.4" },
+  { name: "D. Draisaitl", team: "EDM", ir: "96.1" },
+  { name: "C. McDavid",   team: "EDM", ir: "95.8" },
+  { name: "M. Tkachuk",   team: "FLA", ir: "94.2" },
+  { name: "J. Hughes",    team: "NJD", ir: "93.7" },
+  { name: "A. Fox",       team: "NYR", ir: "92.5" },
+  { name: "B. Point",     team: "TBL", ir: "91.9" },
+  { name: "K. Kaprizov",  team: "MIN", ir: "91.3" },
+  { name: "T. Aho",       team: "CAR", ir: "90.8" },
+  { name: "D. Pastrnak",  team: "BOS", ir: "90.2" },
+];
+
+function buildTicker() {
+  const track = document.getElementById('tickerTrack');
+  const doubled = [...tickerPlayers, ...tickerPlayers];
+  track.innerHTML = doubled.map(p =>
+    `<span class="ticker-item">${p.name} <span style="color:var(--gray-400);font-size:0.75rem;">${p.team}</span> <span class="ir">IR ${p.ir}</span></span>`
+  ).join('');
+}
+
+// ── IR LEADERBOARD ──
+function buildLeaderboard() {
+  const lb = document.getElementById('irLeaderboard');
+  lb.innerHTML = tickerPlayers.slice(0, 8).map((p, i) =>
+    `<div class="ir-row">
+      <span class="ir-rank">${i + 1}</span>
+      <div class="ir-player">
+        <div class="ir-player-name">${p.name}</div>
+        <div class="ir-player-team">${p.team}</div>
+      </div>
+      <span class="ir-score">${p.ir}</span>
+    </div>`
+  ).join('');
+}
+
+// ── COPY LINK ──
+function copyLink() {
+  navigator.clipboard.writeText('https://nhlanalytica.com').then(() => {
+    const btn = document.querySelector('.share-copy');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+// ── INIT ──
+buildTicker();
+buildLeaderboard();
+</script>
+</body>
+</html>
